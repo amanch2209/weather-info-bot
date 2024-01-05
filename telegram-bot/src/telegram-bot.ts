@@ -11,12 +11,15 @@ const OPEN_WEATHER_API = process.env.OPEN_WEATHER;
 export class BotService{
     constructor(){
         const bot = new telegramBot(TELEGRAM_BOT_TOKEN , {polling:true});
-        bot.onText(/\/start/, async(msg)=>{
+        bot.onText(/\/start/, (msg)=>{
             const ID = msg.chat.id;
             const name = msg.from.first_name;
-            const input = msg.text;
             bot.sendMessage(ID,`Hi ${name}, Welcome to the Weather Info Bot`);
             bot.sendMessage(ID, `Please type the City Name for weather updates`);
+        })
+        bot.on('message', async(msg)=>{
+            const input = msg.text;
+            const ID = msg.chat.id;
             try{
                 const response = await axios.get(
                     `https://api.openweathermap.org/data/2.5/weather?q=${input}&appid=${OPEN_WEATHER_API}`,
