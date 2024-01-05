@@ -2,8 +2,8 @@
 /dist
 /node_modules
 
-# ENV File
-/vars
+#ENV File
+/var
 
 # Logs
 logs
