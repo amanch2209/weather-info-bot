@@ -3,7 +3,7 @@
 /node_modules
 
 # ENV File
-/vars
+.env
 
 # Logs
 logs
