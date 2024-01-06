@@ -7,7 +7,7 @@ export class AdminController {
 
     @Get('apiKey')
     getAPIKey(){
-        return this.adminService.getAPI
+        return this.adminService.getAPI();
     }
 
     @Post('apiKey')

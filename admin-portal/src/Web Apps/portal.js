@@ -14,6 +14,12 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
+var express = require('express')
+var cors = require('cors')
+var app = express()
+
+app.use(cors());
+
 const Portal = ()=>{
     const [apiKey, setAPIKey] = useState('');
     const [users, setUsers] = useState([]);
@@ -87,7 +93,7 @@ const Portal = ()=>{
                                 <TableRow key={user.ID}>
                                     <TableCell>{user.ID}</TableCell>
                                     <TableCell>{user.userName}</TableCell>
-                                    <TableCell>{apiKey}</TableCell>
+                                    <TableCell>{user.apiKey}</TableCell>
                                     <TableCell>
                                         <IconButton aria-label="delete" onClick={() => deleteUser(user.ID)}>
                                             <DeleteIcon />
