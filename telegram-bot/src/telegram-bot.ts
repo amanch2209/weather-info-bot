@@ -89,10 +89,7 @@ export class BotService{
                 }catch(error){
                     console.log(error.message);
                 }
-            }
-            else{
-                this.bot.sendMessage(ID, `Please Subscribe to the bot first`);
-            }            
+            }         
         });
     }
 
