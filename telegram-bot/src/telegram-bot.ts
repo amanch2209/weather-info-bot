@@ -23,7 +23,7 @@ export class BotService{
             const ID = msg.chat.id;
             const name = msg.from.first_name;
             this.bot.sendMessage(ID, `Welcome ${name} to the weather info bot`);
-            this.bot.sendMessage(ID, `Use /subscribe command to get weather updates of any city`);
+            this.bot.sendMessage(ID, `Use /subscribe for weather bot api`);
         });
 
         this.bot.onText(/\/subscribe/, async(msg)=>{
@@ -31,32 +31,17 @@ export class BotService{
             const userName = msg.from.first_name;
             const existingUser = await this.userService.getUserByID(ID);
             if(existingUser){
-                this.bot.sendMessage(ID, `You have already subscribed to the bot`);
+                this.bot.sendMessage(ID, `You have already subscribed to the bot api`);
+                this.sendWeatherReport(ID);
             }
             else{
                 const user = await this.userService.createUser(ID, userName);
                 if(user){
-                    this.bot.sendMessage(ID, `You have successfully subscribed to the weather bot`);
+                    this.bot.sendMessage(ID, `You have successfully subscribed to the weather bot api`);
                     this.currentUsers.add(ID);
-                    this.bot.sendMessage(ID, `Use command /unsubscribe to stop receiving weather updates`);
-                    this.bot.on('message',async(msg)=>{
-                        const ID = msg.chat.id;
-                        const input = msg.text;
-                        const apiKey = this.adminService.getAPI();
-                        try{
-                            const response = await axios.get(
-                                `https://api.openweathermap.org/data/2.5/weather?q=${input}&appid=${apiKey}`
-                            )
-                            const data = response.data;
-                            const weather = data.weather[0].description;
-                            const temperature = Math.round(data.main.temp - 273.15);
-                            const city = data.name;
-                            const message = `Weather in ${city} is ${weather} with temperature as ${temperature}C`;
-                            this.bot.sendMessage(ID, message);
-                        }catch(error){
-                            console.log(error.message);
-                        }
-                    })
+                    this.bot.sendMessage(ID, `Use command /unsubscribe to unsubscribe the api`);
+                    this.sendWeatherReport(ID);
+    
                 }
                 else{
                     this.bot.sendMessage(ID, `There is some issue...try again later`);
@@ -71,11 +56,7 @@ export class BotService{
                 const deleteUser = await this.userService.deleteUser(ID);
                 if(deleteUser){
                     this.currentUsers.delete(ID);
-                    this.bot.sendMessage(ID, `You have unsubscribed to weather bot`);
-                    this.bot.on('message',async(msg)=>{
-                        const ID = msg.chat.id;
-                        this.bot.sendMessage(ID, `Please subscribe to the bot first`);
-                    })
+                    this.bot.sendMessage(ID, `You have unsubscribed to weather bot api`);
                 }
                 else{
                     this.bot.sendMessage(ID, `There is some issue...try again later`);
@@ -88,6 +69,25 @@ export class BotService{
 
     }
 
+    async sendWeatherReport(ID:number){
+        const apiKey = this.adminService.getAPI();
+        this.bot.on('message', async(msg)=>{
+            const input = msg.text;
+            try{
+                const response = await axios.get(
+                    `https://api.openweathermap.org/data/2.5/weather?q=${input}&appid=${apiKey}`
+                );
+                const data = response.data;
+                const weather = data.weather[0].description;
+                const temperature = Math.round(data.main.temp-273.15);
+                const city = data.name;
+                const message = `Weather in ${city} is ${weather} with a temperature ${temperature}C`;
+                this.bot.sendMessage(ID,message);
+            }catch(error){
+                console.log(error.message);
+            }
+        });
+    }
 
 
     async getCurrentUsers(){
