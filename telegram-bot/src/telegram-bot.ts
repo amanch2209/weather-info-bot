@@ -29,18 +29,19 @@ export class BotService{
         this.bot.onText(/\/subscribe/, async(msg)=>{
             const ID = msg.chat.id;
             const userName = msg.from.first_name;
+            const apiKey = this.adminService.getAPI();
             const existingUser = await this.userService.getUserByID(ID);
             if(existingUser){
                 this.bot.sendMessage(ID, `You have already subscribed to the bot api`);
-                this.handleResponse(ID,true);
+                this.handleResponse(true);
             }
             else{
-                const user = await this.userService.createUser(ID, userName);
+                const user = await this.userService.createUser(ID, userName,apiKey);
                 if(user){
                     this.bot.sendMessage(ID, `You have successfully subscribed to the weather bot api`);
                     this.currentUsers.add(ID);
                     this.bot.sendMessage(ID, `Use command /unsubscribe to unsubscribe the api`);
-                    this.handleResponse(ID,true);
+                    this.handleResponse(true);
     
                 }
                 else{
@@ -57,7 +58,7 @@ export class BotService{
                 if(deleteUser){
                     this.currentUsers.delete(ID);
                     this.bot.sendMessage(ID, `You have unsubscribed to weather bot api`);
-                    this.handleResponse(ID,false);
+                    this.handleResponse(false);
                 }
                 else{
                     this.bot.sendMessage(ID, `There is some issue...try again later`);
@@ -70,9 +71,10 @@ export class BotService{
 
     }
 
-    async handleResponse(ID:number,subscribed:boolean){
+    async handleResponse(subscribed:boolean){
         this.bot.on('message', async(msg)=>{
             const input = msg.text;
+            const ID = msg.chat.id;
             console.log(subscribed);
             if(subscribed){
                 const apiKey = this.adminService.getAPI();

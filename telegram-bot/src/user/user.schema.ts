@@ -9,6 +9,9 @@ export class User extends Document{
     @Prop({required:true})
     userName : string;
 
+    @Prop({required:true})
+    apiKey : string
+
     @Prop({default:Date.now})
     created : Date;
 
