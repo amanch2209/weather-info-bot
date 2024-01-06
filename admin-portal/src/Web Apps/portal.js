@@ -14,11 +14,6 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-var express = require('express')
-var cors = require('cors')
-var app = express()
-
-app.use(cors());
 
 const Portal = ()=>{
     const [apiKey, setAPIKey] = useState('');
