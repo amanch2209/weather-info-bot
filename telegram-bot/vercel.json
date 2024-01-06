@@ -1,0 +1,26 @@
+{
+    "version" : 2,
+    "env" : {
+        "MONGO_URL" : "mongodb+srv://amanch2209:5rRYuwKlblXqLqn7@cluster0.srjvrft.mongodb.net/users",
+        "TELEGRAM_TOKEN" : "6750238924:AAFNGVjTXgnX9EWinQ1EOpWMXl7G2nq0OoA",
+        "OPEN_WEATHER" : "823145dfae250e0456d52ac7a68d2d5f"
+    },
+    "builds" : [
+        {
+            "src" : "src/main.ts",
+            "use" : "@vercel/node"
+        }
+    ],
+    "routes" : [
+        {
+            "src" : "/(.*)",
+            "dest" : "src/main.ts",
+            "methods" : [
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE"
+            ]
+        }
+    ]
+}
