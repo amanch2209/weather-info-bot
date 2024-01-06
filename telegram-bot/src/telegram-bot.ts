@@ -12,13 +12,13 @@ const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_TOKEN;
 export class BotService{
     private bot : telegramBot;
     private currentUsers : Set<number> = new Set<number>();
+    
     constructor(private readonly userService : UserService, private readonly adminService : AdminService){
         this.bot = new telegramBot(TELEGRAM_BOT_TOKEN , {polling:true});
         this.getCurrentUsers();
         this.botCommands();
     }
     async botCommands(){
-
         this.bot.onText(/\/start/, async(msg)=>{
             const ID = msg.chat.id;
             const name = msg.from.first_name;
@@ -32,7 +32,7 @@ export class BotService{
             const existingUser = await this.userService.getUserByID(ID);
             if(existingUser){
                 this.bot.sendMessage(ID, `You have already subscribed to the bot api`);
-                this.sendWeatherReport(ID);
+                this.handleResponse(ID,true);
             }
             else{
                 const user = await this.userService.createUser(ID, userName);
@@ -40,7 +40,7 @@ export class BotService{
                     this.bot.sendMessage(ID, `You have successfully subscribed to the weather bot api`);
                     this.currentUsers.add(ID);
                     this.bot.sendMessage(ID, `Use command /unsubscribe to unsubscribe the api`);
-                    this.sendWeatherReport(ID);
+                    this.handleResponse(ID,true);
     
                 }
                 else{
@@ -57,6 +57,7 @@ export class BotService{
                 if(deleteUser){
                     this.currentUsers.delete(ID);
                     this.bot.sendMessage(ID, `You have unsubscribed to weather bot api`);
+                    this.handleResponse(ID,false);
                 }
                 else{
                     this.bot.sendMessage(ID, `There is some issue...try again later`);
@@ -69,23 +70,29 @@ export class BotService{
 
     }
 
-    async sendWeatherReport(ID:number){
-        const apiKey = this.adminService.getAPI();
+    async handleResponse(ID:number,subscribed:boolean){
         this.bot.on('message', async(msg)=>{
             const input = msg.text;
-            try{
-                const response = await axios.get(
-                    `https://api.openweathermap.org/data/2.5/weather?q=${input}&appid=${apiKey}`
-                );
-                const data = response.data;
-                const weather = data.weather[0].description;
-                const temperature = Math.round(data.main.temp-273.15);
-                const city = data.name;
-                const message = `Weather in ${city} is ${weather} with a temperature ${temperature}C`;
-                this.bot.sendMessage(ID,message);
-            }catch(error){
-                console.log(error.message);
+            console.log(subscribed);
+            if(subscribed){
+                const apiKey = this.adminService.getAPI();
+                try{
+                    const response = await axios.get(
+                        `https://api.openweathermap.org/data/2.5/weather?q=${input}&appid=${apiKey}`
+                    );
+                    const data = response.data;
+                    const weather = data.weather[0].description;
+                    const temperature = Math.round(data.main.temp-273.15);
+                    const city = data.name;
+                    const message = `Weather in ${city} is ${weather} with a temperature ${temperature}C`;
+                    this.bot.sendMessage(ID,message);
+                }catch(error){
+                    console.log(error.message);
+                }
             }
+            else{
+                this.bot.sendMessage(ID, `Please Subscribe to the bot first`);
+            }            
         });
     }
 
