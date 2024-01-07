@@ -1,5 +1,5 @@
+import {Portal} from './WebApps/portal'
 import './App.css';
-import Portal from './Web Apps/portal'
 import {
 	BrowserRouter,
 	Routes,
@@ -9,8 +9,7 @@ import {
 function App() {
   return (
     <div className="App">
-      <>
-			<BrowserRouter>
+      <BrowserRouter>
 				<Routes>
 					<Route
 						exact
@@ -19,7 +18,6 @@ function App() {
 					/>
 				</Routes>
 			</BrowserRouter>
-		</>
     </div>
   );
 }
