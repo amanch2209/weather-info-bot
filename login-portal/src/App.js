@@ -1,10 +1,10 @@
-import {Portal} from './WebApps/portal'
 import './App.css';
 import {
 	BrowserRouter,
 	Routes,
 	Route,
 } from "react-router-dom";
+import {Portal} from './WebApps/portal'
 
 function App() {
   return (
